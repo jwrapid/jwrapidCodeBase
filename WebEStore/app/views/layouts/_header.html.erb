@@ -1,0 +1,49 @@
+<header class="navbar navbar-fixed-top navbar-inverse">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <%= link_to "e-Store", root_path, id: "logo", class: "brand" %>
+          <nav>
+            <ul class="nav pull-right">
+              <li><%= link_to "Home",    root_path %></li>
+              <% if signed_in? %>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="icon-user icon-white"></i> Account <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><%= link_to "Orders", current_user %></li>
+                    <li><%= link_to "Settings", edit_user_path(current_user) %></li>
+                    <li class="divider"></li>
+                    <li>
+                      <%= link_to "Sign out", signout_path, method: "delete" %>
+                    </li>
+                  </ul>
+                </li>
+                <% if current_user.admin? %>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                      Admin <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li><%= link_to "Users", users_path %></li>
+                      <li><%= link_to "Stats", admin_path %></li>
+                      <li><%= link_to "Orders", orders_path %></li>
+                    </ul>
+                  </li>    
+                <% end %>
+              <% else %>
+                <li><%= link_to "Sign in", signin_path %></li>
+                <li><%= link_to "Sign up", signup_path %></li>
+              <% end %>
+            </ul>
+            <%= form_tag products_path, :method => 'get', class: "navbar-form pull-right" do %>
+                 <%= text_field_tag :search, params[:search], class: "span5 search-query", placeholder: "Search" %>
+                 <%= submit_tag "Search", class: "btn" do%>
+                  <i class="icon-search"></i>Search
+                 <%end%>
+                <span><%= link_to 'Advanced Search', new_search_path, class: "btn btn-primary" %></span>
+            <% end %>
+          </nav>
+        </div>
+      </div>
+</header>

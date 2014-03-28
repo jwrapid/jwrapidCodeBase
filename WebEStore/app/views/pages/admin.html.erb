@@ -1,0 +1,145 @@
+<% provide(:title, 'Stats') %>
+<h1>Stats</h1>
+<div class="row">
+  <div class="span3">
+	  	<%= form_tag admin_path,  :method => 'get' do %>
+	  		<p>Start Date</p>
+	    	<%= date_select :range, :start_date, discard_day: true, default: @start_date, :order => [:month, :year] %> 
+	    	<p>End Date</p> 
+	    	<%= date_select :range, :end_date, discard_day: true,  default: @end_date, :order => [:month, :year] %>  
+	    	<%= submit_tag "Filter for Date Range", class: "btn btn-primary" %>
+		<% end %>
+
+  	<div class="btn-group">
+	  <button class="btn" id="purchased-btn">Products Purchased By User</button>
+	  <button class="btn" id="most-ordered-btn">Most Popular Products</button>
+	  <button class="btn" id="most-sold-btn">Best Sellers</button>
+	  <button class="btn" id="most-looked-btn">Most Carted Products</button>
+	  <button class="btn" id="most-voted-btn">Highest Reputation for Products</button>
+	</div>
+	</div>
+</div>
+<div class="row">
+  <div class="span6">
+
+  	<div id="purchased">
+		<% if @sum_of_products_by_user %>
+			<h3>Products Purchased By User</h3>
+			<table class="table table-hover table-striped">
+			<tr>
+				<th>User Name</th>
+				<th>Product Name</th>
+				<th>How Many Purchased</th>
+				<th>Total Price</th>
+			</tr>
+			<% if !@sum_of_products_by_user.any? %>
+				<tr><td colspan="3">No Stats Found for Date Range</td></tr>
+			<% else %>
+				<% @sum_of_products_by_user.each do |orders_by_user| %>
+				  <tr>
+				  	<td><%= orders_by_user["user"] %></td>
+				  	<td><%= orders_by_user["product"] %></td>
+				  	<td><%= orders_by_user["total"] %></td>
+				  	<td><%= orders_by_user["price"] %></td>
+				  </tr>
+				<% end %>
+			<% end %>
+			</table>
+		<% else %>
+			No Stats Found
+		<% end %>
+	</div>
+
+	<div id="most-ordered">
+		<% if @most_orded_products %>
+			<h3>Most Orded Products</h3>
+			<table class="table table-hover table-striped">
+				<tr>
+				<th>Product Name</th>
+				<th>How Many Times Ordered</th>
+				</tr>
+			<% if !@most_orded_products.any? %>
+				<tr><td colspan="3">No Stats Found for Date Range</td></tr>
+			<% else %>
+				<% @most_orded_products.each do |most_orded_product| %>
+				  <tr>
+				  	<td><%= most_orded_product["product"] %></td>
+				  	<td><%= most_orded_product["total"] %></td>
+				  </tr>
+				<% end %>
+			<% end %>
+			</table>
+		<% else %>
+			No Stats Found
+		<% end %>
+	</div>
+
+	<div id="most-looked">
+		<% if @most_looked_at_products %>
+			<h3>Most Carted Products</h3>
+			<table class="table table-hover table-striped">
+			<tr>
+				<th>Product Name</th>
+				<th>Number Of Times Added to Cart</th>
+			</tr>
+			<% if !@most_looked_at_products.any? %>
+				<tr><td colspan="3">No Stats Found for Date Range</td></tr>
+			<% else %>
+				<% @most_looked_at_products.each do |most_looked_at_product| %>
+				  <tr>
+				  	<td><%= most_looked_at_product["product"] %></td>
+				  	<td><%= most_looked_at_product["total"] %></td>
+				  </tr>
+				<% end %>
+			<% end %>
+			</table>
+		<% else %>
+			No Stats Found
+		<% end %>
+	</div>
+
+	<div id="most-sold">
+		<% if @most_sold_products_by_quantity %>
+		<h3>Total Amount of Products Sold</h3>
+		<table class="table table-hover table-striped">
+		<tr>
+			<th>Product Name</th>
+			<th>Total Sum of Products Sold</th>
+		</tr>
+		<% if !@most_sold_products_by_quantity.any? %>
+			<tr><td colspan="3">No Stats Found for Date Range</td></tr>
+		<% else %>
+			<% @most_sold_products_by_quantity.each do |products_by_quantity| %>
+			  <tr>
+			  	<td><%= products_by_quantity["product"] %></td>
+				<td><%= products_by_quantity["total"] %></td>
+			  </tr>
+			<% end %>
+		<% end %>
+		</table>
+		<% else %>
+			No Stats Found
+		<% end %>
+	</div>
+
+	<div id="most-voted">
+		<% if @most_voted_products.any? %>
+		<h3>Highest Reputation for Products</h3>
+		<p>Note: Filter for  Date Range has no effect on Reputation</p>
+		<table class="table table-hover table-striped">
+			<th>Product Name</th>
+			<th>Reputation</th>
+		<% @most_voted_products.each do |product_vote| %>
+		  <tr>
+		  	<td><%= product_vote.name %></td>
+			<td><%=  product_vote.reputation_for(:votes).to_i %></td>
+		  </tr>
+		<% end %>
+		</table>
+		<% else %>
+			No Stats Found
+		<% end %>
+	</div>
+	
+	</div>
+</div>

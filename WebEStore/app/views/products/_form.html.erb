@@ -1,0 +1,39 @@
+<% if @product.errors.any? %>
+  <div id="error_explanation">
+    <div class="alert alert-error">
+      <%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:
+    </div>
+    <ul>
+    <% @product.errors.full_messages.each do |msg| %>
+      <li>* <%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= f.label :code %>
+<%= f.text_field :code %>
+
+<%= f.label :name %>
+<%= f.text_field :name %>
+
+<%= f.label :image %>
+<%= f.text_field :image %>
+
+<%= f.label :price %>
+<%= f.text_field :price %>
+
+<%= f.label :category_id %>
+<%= f.collection_select :category_id, Category.all, :id, :name %>
+
+<%= f.label :description %>
+<%= f.text_area :description, rows: 6 %>
+
+<%= f.label :weight %>
+<%= f.text_field :weight %>
+
+<%= f.label :dimension %>
+<%= f.text_field :dimension %>  
+
+<%= f.label :quantity %>
+<%= f.text_field :quantity %>

@@ -1,0 +1,108 @@
+<div class="center hero-unit">
+  <h1>Welcome to the e-Store</h1>
+
+  <h2>
+     Grand Opening Sale this Week!
+  </h2>
+  <% if !signed_in? %>
+  <%= link_to "Sign up now!", signup_path, class: "btn btn-large btn-primary" %>
+  <% end %>
+  <%= link_to "Browse Appliances!", products_path, class: "btn btn-large btn-primary" %>
+</div>
+
+<% if @most_sold_products.any? %>
+  <h3>Best Sellers</h3>
+<% end %>
+ <div class="row-fluid">
+<ul class="thumbnails">
+  <% @most_sold_products.each do |most_sold_product| %>
+  <li class="span4">
+    <div class="thumbnail">
+      <%= image_tag(most_sold_product.product.image, alt: most_sold_product.product.name, size: "260x180") %>
+      <div class="caption">
+        <h3><%= number_to_currency most_sold_product.product.price %></h3>
+        <p><%=  most_sold_product.product.name %> </p>
+        <p>
+          <%= button_to 'Add to Cart', line_items_path(product_id: most_sold_product.product), class: 'btn btn-primary', remote: true %>
+          <%= link_to 'Details', most_sold_product.product, class: 'btn' %>
+        </p>
+         <% if current_user %>
+         <%= link_to vote_product_path(most_sold_product.product, type: "up"), class: "btn btn-small btn-primary", :method => :post do %>
+          <i class="icon-thumbs-up icon-white"></i>
+           <% end %>
+         <%= pluralize most_sold_product.product.reputation_for(:votes).to_i, "vote" %>
+         <%= link_to vote_product_path(most_sold_product.product, type: "down"), method: "post", class: "btn btn-small btn-danger" do%>
+          <i class="icon-thumbs-down icon-white"></i>
+           <% end %>
+        <% end %>
+      </div> <!--/caption-->
+    </div><!--/thumbnail-->
+  </li>
+  <% end %>
+</ul>
+</div><!--/row-fluid-->
+
+<% if @popular_cart_products.any? %>
+  <h3>What Other Customers Are Looking At Right Now</h3>
+<% end %>
+ <div class="row-fluid">
+<ul class="thumbnails">
+  <% @popular_cart_products.each do |popular_cart_product| %>
+  <li class="span4">
+    <div class="thumbnail">
+      <%= image_tag(popular_cart_product.product.image, alt: popular_cart_product.product.name, size: "260x180") %>
+      <div class="caption">
+        <h3><%= number_to_currency popular_cart_product.product.price %></h3>
+        <p><%=  popular_cart_product.product.name %> </p>
+        <p>
+          <%= button_to 'Add to Cart', line_items_path(product_id: popular_cart_product.product), class: 'btn btn-primary', remote: true %>
+          <%= link_to 'Details', popular_cart_product.product, class: 'btn' %>
+        </p>
+         <% if current_user %>
+         <%= link_to vote_product_path(popular_cart_product.product, type: "up"), class: "btn btn-small btn-primary", :method => :post do %>
+          <i class="icon-thumbs-up icon-white"></i>
+           <% end %>
+          <%= pluralize popular_cart_product.product.reputation_for(:votes).to_i, "vote" %>
+         <%= link_to vote_product_path(popular_cart_product.product, type: "down"), method: "post", class: "btn btn-small btn-danger" do%>
+          <i class="icon-thumbs-down icon-white"></i>
+           <% end %>
+        <% end %>
+      </div> <!--/caption-->
+    </div><!--/thumbnail-->
+  </li>
+  <% end %>
+</ul>
+</div><!--/row-fluid-->
+
+
+<% if @popular_voted_products.any? %>
+  <h3>Trending Products</h3>
+<% end %>
+ <div class="row-fluid">
+<ul class="thumbnails">
+  <% @popular_voted_products.each do |popular_voted_product| %>
+  <li class="span4">
+    <div class="thumbnail">
+      <%= image_tag(popular_voted_product.image, alt: popular_voted_product.name, size: "260x180") %>
+      <div class="caption">
+        <h3><%= number_to_currency popular_voted_product.price %></h3>
+        <p><%=  popular_voted_product.name %> </p>
+        <p>
+          <%= button_to 'Add to Cart', line_items_path(product_id: popular_voted_product), class: 'btn btn-primary', remote: true %>
+          <%= link_to 'Details', popular_voted_product, class: 'btn' %>
+        </p>
+         <% if current_user %>
+         <%= link_to vote_product_path(popular_voted_product, type: "up"), class: "btn btn-small btn-primary", :method => :post do %>
+          <i class="icon-thumbs-up icon-white"></i>
+           <% end %>
+         <%= pluralize popular_voted_product.reputation_for(:votes).to_i, "vote" %>
+         <%= link_to vote_product_path(popular_voted_product, type: "down"), method: "post", class: "btn btn-small btn-danger" do%>
+          <i class="icon-thumbs-down icon-white"></i>
+           <% end %>
+        <% end %>
+      </div> <!--/caption-->
+    </div><!--/thumbnail-->
+  </li>
+  <% end %>
+</ul>
+</div><!--/row-fluid-->

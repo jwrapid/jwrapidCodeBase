@@ -1,0 +1,31 @@
+<% provide(:title, @user.name) %>
+<div class="row">
+  <aside class="span4">
+    <section>
+      <h1>
+        <%= gravatar_for @user %>
+        <%= @user.name %>
+      </h1>
+    </section>
+  </aside>
+  <div class="span12">
+    <% if @orders.any? %>
+      <h3>Orders (<%= @orders.count %>)</h3>
+      <table class="table table-hover table-striped">
+      	<tr>
+      		<th>Order ID</th>
+      		<th>Recipient</th>
+      		<th>Purchased Items</th>
+      		<th>Total Price </th>
+          <th>Shipping Type</th>
+      		<th>Order Placed</th>
+      		<th>Shipping Status</th>
+      	</tr>
+      	 <%= render @orders %>
+    </table>
+      <%= will_paginate @orders %>
+    <% else %>
+      <h3> No Orders Found <h3>
+    <% end %>
+  </div>
+</div>

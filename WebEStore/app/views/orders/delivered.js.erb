@@ -1,0 +1,2 @@
+$('#ship-status-<%= @order.id %>').html("<i class='icon-ok'></i> Shipped. ETA: <%= @order.delivery_date.strftime("%d %b %Y") %>");
+$('#ship-button-<%= @order.id  %>').html("");

@@ -1,0 +1,16 @@
+<% if line_item == @current_item %>
+<tr id="current_item">
+<% else %>
+<tr>
+<% end %>
+<td><%= line_item.quantity %>&times;</td>
+<td><%= line_item.product.name %></td>
+<td class="price-cell"><%= number_to_currency(line_item.total_price) %></td>
+<td><%= link_to increase_line_item_path(line_item), class: "btn btn-mini btn-primary", :method => :put, remote: true do %>
+ 	<i class='icon-arrow-up icon-white'></i>
+ <% end %>
+<%= link_to decrease_line_item_path(line_item), class: "btn btn-mini btn-danger", :method => :put, remote: true do %>
+	<i class="icon-arrow-down icon-white"></i>
+<% end %>
+</td>
+</tr>

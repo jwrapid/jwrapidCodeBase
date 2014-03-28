@@ -1,0 +1,35 @@
+<tr>
+  <td><%= link_to "##{order.id}", order %></td>
+  <td><%= order.full_name %></td>
+  <td>
+  	<table>
+  		<% order.line_items.each do |line_item| %>
+	  		<tr>
+	  			<td><%= line_item.quantity %>&times;</td>
+	  			<td><%= line_item.product.name %> </td>
+	  			<td><%=  number_to_currency(line_item.product.price) %> </td>
+	  		</tr>
+  	<% end %>
+  	</table>
+  </td>
+  <td><%= number_to_currency(order.total_price) %></td>
+  <td><%=order.shipping_type %></td>
+  <td><%= time_ago_in_words(order.created_at) %> ago</td>
+  <% if order.delivered? %>
+    <td id="ship-status-<%= order.id  %>">
+        <p><i class="icon-ok"></i> Shipped. <br><br> ETA: <%= order.delivery_date.strftime("%d %b %Y") %></p>
+    </td>
+     <% else %>
+     <td id="ship-status-<%= order.id  %>">
+        <p><i class="icon-remove"></i> <br> Not Yet Shipped</p>
+    </td>
+  <% end %>
+  <% if is_admin? && !order.delivered? %>
+  <td id="ship-button-<%= order.id  %>">
+      <%= link_to delivered_order_path(order), class: "btn btn-mini btn-success", :method => :put, remote: true do %>
+        <i class='icon-ok icon-white'></i> Ship
+      <% end %>
+    </td>
+  <% end %>
+
+</tr>

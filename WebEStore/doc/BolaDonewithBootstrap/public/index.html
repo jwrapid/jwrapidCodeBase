@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Onest : OnlineElectronicsSTore</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- CSS -->
+<link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+	media="screen">
+<link href="css/index.css" rel="stylesheet">
+<!-- CSS End-->
+
+<!-- JS Libs -->
+<script type="text/javascript" src="../lib/jquery.js"></script>
+<script type="text/javascript" src="../lib/knockout-2.2.1.min.js"></script>
+<script type="text/javascript" src="../lib/d3.v3.min.js"></script>
+<script src="../lib/bootstrap/js/bootstrap.min.js"></script>
+<!-- JS Libs End -->
+
+<!-- Templates -->
+<script type="text/html" id="webshopTemplate">
+	<div data-bind="with: webShopViewModel">
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="container">
+					<ul class="nav pull-left">
+						<li class="dropdown"><a
+							 href="#" class="dropdown-toggle" data-toggle="dropdown">Products<b class="caret"></b></a>
+							<ul class="dropdown-menu">  
+     							<li><a href="#" data-bind="click: productCategoriesMenuItemClicked">Product Categories</a></li>  
+  								<li><a href="#" data-bind="click: productsListMenuItemClicked">Products List</a></li>  
+  								<li><a href="#" data-bind="click: searchProductMenuItemClicked">Search Product</a></li>  
+    						</ul> 					
+
+						</li>
+						<li ><a href="#" class="dropdown-toggle" data-toggle="dropdown" data-bind="">Cart<b class="caret"></b></a>
+							<ul class="dropdown-menu">  
+     							<li><a href="#" data-bind="click: viewCartMenuItemClicked">View Cart</a></li>  
+  								<li><a href="#" data-bind="click: checkoutMenuItemClicked">Checkout</a></li>  
+    						</ul> 	
+						</li>
+					</ul>
+
+				</div>
+			</div>
+		</div>
+		<div data-bind="if: activeTemplateName">
+			<div class="container" data-bind="template: activeTemplateName">
+			</div>
+		</div>
+	</div>
+</script>
+<script type="text/html" id="searchProductTemplate">
+	<div data-bind="with: productsViewModel">
+		<form class="well">  
+  			<label>Search product:</label>  
+  			<input type="text" class="span3" placeholder="Product code">  
+  			<span class="help-inline">You can search products by code!</span>  <br>
+  			<input type="text" class="span3" placeholder="Product name">  
+  			<span class="help-inline">Or by name!</span>  <br>
+  			<input type="text" class="span3" placeholder="Product category">  
+  			<span class="help-inline">Or by category!</span>  <br>
+  			<input type="number" class="span3" placeholder="Max Price">  
+  			<span class="help-inline">Specify the maximum price!</span>  <br>
+  			<input type="number" class="span3" placeholder="Max Weight">  
+  			<span class="help-inline">Or the maximum weight!</span>  <br>
+			<label class="checkbox">  
+    			<input type="checkbox"> Check if you only want to search products that are currently available in stock!  
+  			</label>  
+  			<button type="submit" class="btn">Search</button>  
+		</form>  
+	</div>
+</script>    
+<script type="text/html" id="listProductCategoriesTemplate">
+	<div data-bind="with: productsViewModel">
+		<h2>The following product categories are available:</h2>
+		<ul data-bind="foreach: productCategories">
+			<li class="productCategory">
+				<a href="#" data-bind="text: $data, click: $parents[1].listProductsInCategory"></a>				
+			</li>
+		</ul> 
+	</div>
+</script> 
+<script type="text/html" id="listProductsInCategoryTemplate">
+	<div data-bind="with: productsViewModel">
+		<h3>The following products are available in category "<strong data-bind="text: selectedProductCategory"></strong>":</h3>
+		<ul data-bind="foreach: productsPerCategory">
+			<li class="product">
+				<table class="table">  
+        			<thead>
+						<tr>
+							<td>Code</td>
+							<td>Name</td>	
+							<td>Category</td>						
+							<td>Image</td>
+							<td>Price</td>
+							<td>Weight</td>
+							<td>Dimensions</td>
+							<td>In Stock</td>
+						</tr>
+					</thead>
+					<tbody>	  
+						<tr>
+							<td data-bind="text: $data.code"></td>
+							<td><a href="#" data-bind="text: $data.name, click: $parents[1].showProductDetails"></a></td>
+							<td><a href="#" data-bind="text: $data.category, click: $parents[1].listProductsInCategory.bind($data,$data.category)"></a></td>
+							<td><img data-bind="attr: {width: '100px', src: $data.image}"/></td>
+							<td data-bind="text: $parent.getFormattedPrice($data.price)"></td>
+							<td data-bind="text: $parent.getFormattedWeight($data.weight)"></td>
+							<td data-bind="text: $data.dimensions"></td>
+							<td><span data-bind="text: $data.numberAvailableInStock"></span> piece(s)</td>
+						</tr>
+					</tbody>		
+				</table>	
+				<button data-bind="click: $parents[1].addToCart">Add to Cart</button>	
+			</li>
+		</ul> 
+	</div>
+</script> 
+<script type="text/html" id="listProductsTemplate">
+	<div data-bind="with: productsViewModel">
+		<h3>The following products are available:</h3>
+		<ul data-bind="foreach: products">
+			<li class="product">
+				<table class="table">  
+        			<thead>
+						<tr>
+							<td>Code</td>
+							<td>Name</td>	
+							<td>Category</td>						
+							<td>Image</td>
+							<td>Price</td>
+							<td>Weight</td>
+							<td>Dimensions</td>
+							<td>In Stock</td>
+						</tr>
+					</thead>
+					<tbody>	  
+						<tr>
+							<td data-bind="text: $data.code"></td>
+							<td><a href="#" data-bind="text: $data.name, click: $parents[1].showProductDetails"></a></td>
+							<td><a href="#" data-bind="text: $data.category, click: $parents[1].listProductsInCategory.bind($data, $data.category)"></a></td>
+							<td><img data-bind="attr: {width: '100px', src: $data.image}"/></td>
+							<td data-bind="text: $parent.getFormattedPrice($data.price)"></td>
+							<td data-bind="text: $parent.getFormattedWeight($data.weight)"></td>
+							<td data-bind="text: $data.dimensions"></td>
+							<td><span data-bind="text: $data.numberAvailableInStock"></span> piece(s)</td>
+						</tr>
+					</tbody>		
+				</table>
+				<button data-bind="click: $parents[1].addToCart">Add to Cart</button>		
+			</li>
+		</ul> 
+	</div>
+</script> 
+<script type="text/html" id="cartContentsTemplate">
+	<div data-bind="with: cartViewModel">
+		<h3>The following products are in your cart:</h3>
+		<ul data-bind="foreach: cartContent">
+			<li class="product">
+				<table class="table">  
+        			<thead>
+						<tr>
+							<td>Code</td>
+							<td>Name</td>	
+							<td>Category</td>						
+							<td>Image</td>
+							<td>Price</td>
+							<td>Weight</td>
+							<td>Dimensions</td>
+							<td>In Stock</td>
+						</tr>
+					</thead>
+					<tbody>	  
+						<tr>
+							<td data-bind="text: $data.code"></td>
+							<td><a href="#" data-bind="text: $data.name, click: $parents[1].showProductDetails"></a></td>
+							<td><a href="#" data-bind="text: $data.category, click: $parents[1].listProductsInCategory.bind($data, $data.category)"></a></td>
+							<td><img data-bind="attr: {width: '100px', src: $data.image}"/></td>
+							<td data-bind="text: $parents[1].productsViewModel.getFormattedPrice($data.price)"></td>
+							<td data-bind="text: $parents[1].productsViewModel.getFormattedWeight($data.weight)"></td>
+							<td data-bind="text: $data.dimensions"></td>
+							<td><span data-bind="text: $data.numberAvailableInStock"></span> piece(s)</td>
+						</tr>
+					</tbody>		
+				</table>
+						
+			</li>
+		</ul> 
+		<br>
+		<br>
+		Total Number Of Products In Cart: <span data-bind="text: totalCartNumberOfItems"></span><br><br>
+		Total Price: <span data-bind="text: $parent.productsViewModel.getFormattedPrice(totalCartPrice())"></span><br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<button data-bind="click: clearCart">Clear Cart</button><br><br>
+		<button data-bind="click: $parent.checkoutMenuItemClicked">Checkout</button>
+	</div>
+</script>
+<script type="text/html" id="checkoutTemplate">
+	<div data-bind="with: cartViewModel">
+		<h1>Thank you!</h1>
+		Your order will soon be shipped!
+	</div>
+</script>
+<script type="text/html" id="showProductDetailsTemplate">
+	<div data-bind="with: productsViewModel">
+		<table>
+			<tr>
+				<td><h3><strong data-bind="text: product()['name']"></strong></h3></td>
+				<td>Price: <span data-bind="text: getFormattedPrice(product()['price'])"></span></td>
+			</tr>
+			<tr>
+				<td><img data-bind="attr: {width: '300px', src: product()['image']}"/></td>
+				<td>Description: <span data-bind="text: product()['description']"></span></td>	
+			</tr>
+			<tr>
+				<td><button data-bind="click: $parent.addToCart.bind($data,product())">Add to Cart</button></td>
+				<td>Weight: <span data-bind="text: getFormattedWeight(product()['weight'])"></span></td>				
+			</tr>
+			<tr>
+				<td></td>
+				<td>Dimensions: <span data-bind="text: product()['dimensions']"></span></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>In stock: <span data-bind="text: product()['numberAvailableInStock']"></span> piece(s)</td>
+			</tr>	
+		</table>		
+	</div>
+</script> 
+<script type="text/html" id="managementTemplate">
+	<div data-bind="with: managementViewModel">
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="container">
+					<ul class="nav pull-left">
+						<li id = "customerStatisticsMenuItem" class = "active"><a
+							 href="#"  data-bind="click: customerStatisticsMenuItemClicked">Customer Statistics</a>
+						</li>
+						<li id = "productStatisticsMenuItem"><a
+						 	href="#"  data-bind="click: productStatisticsMenuItemClicked">Product Statistics</a>
+						</li>
+						<li id = "storeStatisticsMenuItem"><a
+							 href="#"  data-bind="click: storeStatisticsMenuItemClicked">Store Statistics</a>
+						</li>
+
+					</ul>
+
+				</div>
+			</div>
+		</div>
+		<div data-bind="if: activeTemplateName">
+			<div class="container" data-bind="template: activeTemplateName">
+			</div>
+		</div>
+	</div>
+</script>
+<script type="text/html" id="customerStatisticsTemplate">
+	<div>
+		<table class="table">  
+        	<thead>
+				<tr>
+		 			<td class = "customerStatistics">Customer ID</td>
+					<td class = "customerStatistics">Customer Name</td>
+					<td class = "customerStatistics">Aggregated Purchase Count</td>
+					<td class = "customerStatistics">Aggregated Purchase Amount</td>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach: customerStatistics">	  
+				<tr>
+					<td class = "customerStatistics" data-bind="text:$data.customerID"></td>
+					<td class = "customerStatistics" data-bind="text:$data.customerName"></td>
+					<td class = "customerStatistics" data-bind="text:$data.totalPurchaseCount"></td>
+					<td class = "customerStatistics" data-bind="text:$parent.getFormattedPrice($data.totalPurchasePrice)"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</script>
+<script type="text/html" id="productStatisticsTemplate">
+	<div>
+		<table class="table">  
+        	<thead>
+				<tr>
+		 			<td class = "productStatistics">Product Code</td>
+					<td class = "productStatistics">Product Name</td>
+					<td class = "productStatistics">Aggregated Sold Count</td>
+					<td class = "productStatistics">Aggregated Sold Amount</td>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach: productStatistics">	  
+				<tr>
+					<td class = "productStatistics" data-bind="text:$data.productCode"></td>
+					<td class = "productStatistics" data-bind="text:$data.productName"></td>
+					<td class = "productStatistics" data-bind="text:$data.totalSoldCount"></td>
+					<td class = "productStatistics" data-bind="text:$parent.getFormattedPrice($data.totalSoldPrice)"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</script>    
+<script type="text/html" id="storeStatisticsTemplate">
+	<div>
+		<table class="table">  
+        	<thead>
+				<tr>
+		 			<td class = "storeStatistics">Store ID</td>
+					<td class = "storeStatistics">Store Name</td>
+					<td class = "storeStatistics">Aggregated Order Count</td>
+					<td class = "storeStatistics">Aggregated Order Amount</td>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach: storeStatistics">	  
+				<tr>
+					<td class = "storeStatistics" data-bind="text:$data.storeID"></td>
+					<td class = "storeStatistics" data-bind="text:$data.storeName"></td>
+					<td class = "storeStatistics" data-bind="text:$data.totalOrderCount"></td>
+					<td class = "storeStatistics" data-bind="text:$parent.getFormattedPrice($data.totalOrderPrice)"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</script>    
+
+    
+<!-- Templates End-->
+
+<!-- Bindings-->
+
+<!-- Bindings End-->
+
+<!-- Viewmodels-->
+<script type="text/javascript" src="../app/viewmodels/products.js"></script>
+<script type="text/javascript" src="../app/viewmodels/cart.js"></script>
+<script type="text/javascript" src="../app/viewmodels/webshop.js"></script>
+<script type="text/javascript" src="../app/viewmodels/management.js"></script>
+<script type="text/javascript" src="../app/viewmodels/root.js"></script>
+<!-- Viewmodels End-->
+
+</head>
+<body>
+
+
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<ul class="nav pull-left">
+					<li id="webShopMenuItem" class="active"><a href="#"
+						data-bind="click: $root.webShopMenuItemClicked">Webshop</a></li>
+					<li id="managementMenuItem"><a href="#"
+						data-bind="click: $root.managementMenuItemClicked">Management</a>
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+	<div class="container" id="contentContainer"
+		data-bind="template: {name: getActiveTemplateName, afterRender: templatePostProcessor}">
+	</div>
+		
+
+</body>
+</html>

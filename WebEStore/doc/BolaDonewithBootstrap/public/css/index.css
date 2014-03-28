@@ -1,0 +1,25 @@
+ body 
+ {  
+  	padding-top: 60px;  
+  	padding-bottom: 40px;  
+ }  
+ li.productCategory
+ {
+ 	padding-top: 10px;
+ }
+ li.product
+ {
+ 	padding-top: 30px;
+ }    
+ td.customerStatistics
+ {
+ 	text-align: center;
+ }
+  td.productStatistics
+ {
+ 	text-align: center;
+ }
+  td.storeStatistics
+ {
+ 	text-align: center;
+ }

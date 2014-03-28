@@ -1,0 +1,93 @@
+<div id="search_results">
+<h1>Products</h1>
+<div class="btn-toolbar">
+ <div class="btn-group top pull-right">
+  <%= sortable "name"%>
+  <%= sortable "price" %>
+  <%= sortable "quantity" %>
+ </div>
+</div>
+
+<% if @search.any? %>
+<table class="table table-hover table-striped">
+<% @search.each do |product| %>
+  <tr>
+    <td>
+         <% if current_user %>
+         <%= link_to vote_product_path(product, type: "up"), class: "btn btn-small btn-primary", :method => :post do %>
+          <i class="icon-thumbs-up icon-white"></i>
+           <% end %>
+         <%= pluralize product.reputation_for(:votes).to_i, "vote" %>
+         <%= link_to vote_product_path(product, type: "down"), method: "post", class: "btn btn-small btn-danger" do%>
+          <i class="icon-thumbs-down icon-white"></i>
+           <% end %>
+         <% end %>
+    </td>
+    <td><%= image_tag(product.image, alt: product.name, class: "product-img", size: "192x192") %></td>
+    <td>
+    <%= product.name %><br><br>
+    <%= truncate(product.description, length: 250) %>
+    </td>
+    <td><%=  number_to_currency product.price %></td>
+
+    <td id="buttons">
+        <%= link_to 'Details', product, class: 'product-btn btn' %>
+        <% if  is_admin? %>
+            <%= link_to 'Edit', edit_product_path(product),  class: 'product-btn btn' %>
+            <%= link_to 'Delete', product,  class: 'product-btn btn btn-danger', method: :delete, data: { confirm: 'Are you sure?' } %>
+        <% end %>
+        <%= button_to 'Add to Cart', line_items_path(product_id: product), class: 'product-btn btn btn-primary',
+         remote: true %>
+    </td>
+  </tr>
+<% end %>
+</table>
+<% else %>
+ <div class="alert alert-error" id="userNotice"><strong>Sorry!</strong> Your search did not match any products.</div>
+<% if @most_sold_products.any? %>
+  <h3>Best Sellers</h3>
+<% end %>
+ <div class="row-fluid">
+<ul class="thumbnails">
+  <% @most_sold_products.each do |most_sold_product| %>
+  <li class="span4">
+    <div class="thumbnail">
+      <%= image_tag(most_sold_product.product.image, alt: most_sold_product.product.name, size: "260x180") %>
+      <div class="caption">
+        <h3><%= number_to_currency most_sold_product.product.price %></h3>
+        <p><%=  most_sold_product.product.name %> </p>
+        <p>
+          <%= button_to 'Add to Cart', line_items_path(product_id: most_sold_product.product), class: 'btn btn-primary', remote: true %>
+          <%= link_to 'Details', most_sold_product.product, class: 'btn' %>
+        </p>
+        <%= pluralize most_sold_product.product.reputation_for(:votes).to_i, "vote" %>
+      </div> <!--/caption-->
+    </div><!--/thumbnail-->
+  </li>
+  <% end %>
+</ul>
+<% if @most_voted_products.any? %>
+  <h3>Trending</h3>
+<% end %>
+ <div class="row-fluid">
+<ul class="thumbnails">
+  <% @most_voted_products.each do |most_voted_product| %>
+  <li class="span4">
+    <div class="thumbnail">
+      <%= image_tag(most_voted_product.image, alt: most_voted_product.name, size: "260x180") %>
+      <div class="caption">
+        <h3><%= number_to_currency most_voted_product.price %></h3>
+        <p><%=  most_voted_product.name %> </p>
+        <p>
+          <%= button_to 'Add to Cart', line_items_path(product_id: most_voted_product), class: 'btn btn-primary', remote: true %>
+          <%= link_to 'Details', most_voted_product, class: 'btn' %>
+        </p>
+        <%= pluralize most_voted_product.reputation_for(:votes).to_i, "vote" %>
+      </div> <!--/caption-->
+    </div><!--/thumbnail-->
+  </li>
+  <% end %>
+</ul>
+</div><!--/row-fluid-->
+<% end %>
+</div>
