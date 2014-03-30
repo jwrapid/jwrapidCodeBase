@@ -1,5 +1,8 @@
 #410 Project
 
+## Demo
+Visit http://jwrapidestore.herokuapp.com/
+
 ## Running locally
 
 Run the following commands to install:
